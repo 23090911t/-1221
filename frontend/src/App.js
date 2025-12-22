@@ -1,6 +1,6 @@
 // frontend/src/App.js
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // customer
 import CustomerMenu from "./customer/CustomerMenu";
