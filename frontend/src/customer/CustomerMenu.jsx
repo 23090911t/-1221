@@ -1,7 +1,9 @@
 // frontend/src/customer/CustomerMenu.jsx
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+// 固定菜單資料（前端）
+import menuData from "../data/menu.json";
 
 export default function CustomerMenu() {
   const [menu, setMenu] = useState([]);
@@ -9,24 +11,21 @@ export default function CustomerMenu() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  // 載入固定菜單（不依賴後端）
   useEffect(() => {
-    setLoading(true);
-    axios.get("http://localhost:3001/menu")
-      .then(res => {
-        setMenu(res.data || []);
-      })
-      .catch(err => {
-        console.error("抓菜單錯誤:", err);
-        setMenu([]);
-      })
-      .finally(() => setLoading(false));
+    setMenu(menuData || []);
+    setLoading(false);
   }, []);
 
   const addToCart = (item) => {
-    setCart(prev => {
-      const exist = prev.find(i => i.id === item.id);
+    setCart((prev) => {
+      const exist = prev.find((i) => i.id === item.id);
       if (exist) {
-        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+        return prev.map((i) =>
+          i.id === item.id
+            ? { ...i, quantity: i.quantity + 1 }
+            : i
+        );
       } else {
         return [...prev, { ...item, quantity: 1 }];
       }
@@ -47,16 +46,25 @@ export default function CustomerMenu() {
         <p>目前沒有菜單。</p>
       ) : (
         <div>
-          {menu.map(item => (
-            <div key={item.id} style={{ padding: 10, borderBottom: "1px solid #eee" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <strong>{item.name}</strong>
-                  <div>NT$ {item.price}</div>
-                </div>
-                <div>
-                  <button onClick={() => addToCart(item)}>加入購物車</button>
-                </div>
+          {menu.map((item) => (
+            <div
+              key={item.id}
+              style={{
+                padding: 10,
+                borderBottom: "1px solid #eee",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}
+            >
+              <div>
+                <strong>{item.name}</strong>
+                <div>NT$ {item.price}</div>
+              </div>
+              <div>
+                <button onClick={() => addToCart(item)}>
+                  加入購物車
+                </button>
               </div>
             </div>
           ))}
@@ -64,7 +72,11 @@ export default function CustomerMenu() {
       )}
 
       <div style={{ marginTop: 20 }}>
-        <button onClick={goCart}>前往購物車 ({cart.reduce((s, i) => s + i.quantity, 0)})</button>
+        <button onClick={goCart}>
+          前往購物車（
+          {cart.reduce((sum, item) => sum + item.quantity, 0)}
+          ）
+        </button>
       </div>
     </div>
   );
