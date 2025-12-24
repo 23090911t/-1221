@@ -3,29 +3,36 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE = "https://1221.onrender.com";
+
 export default function Cart() {
   const location = useLocation();
   const navigate = useNavigate();
   const cart = (location.state && location.state.cart) || [];
 
-  const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
-  const submitOrder = () => {
+  const submitOrder = async () => {
     if (!cart.length) {
       alert("購物車是空的");
       return;
     }
 
-    axios.post("http://localhost:3001/orders", { items: cart })
-      .then(res => {
-        alert("訂單送出成功！訂單編號: " + (res.data.orderId || ""));
-        // 清空購物車後回菜單
-        navigate("/customer");
-      })
-      .catch(err => {
-        console.error(err);
-        alert("訂單送出失敗");
+    try {
+      await axios.post(`${API_BASE}/orders`, {
+        items: cart,
+        createdAt: new Date().toISOString()
       });
+
+      alert("訂單送出成功！");
+      navigate("/customer");
+    } catch (err) {
+      console.error("送出訂單失敗", err);
+      alert("訂單送出失敗，請稍後再試");
+    }
   };
 
   return (
@@ -36,9 +43,13 @@ export default function Cart() {
         <p>購物車空空如也。</p>
       ) : (
         <>
-          {cart.map(it => (
-            <div key={it.id} style={{ borderBottom: "1px solid #eee", padding: 8 }}>
-              <strong>{it.name}</strong> x {it.quantity} — NT$ {it.price * it.quantity}
+          {cart.map((item) => (
+            <div
+              key={item.id}
+              style={{ borderBottom: "1px solid #eee", padding: 8 }}
+            >
+              <strong>{item.name}</strong> × {item.quantity} — NT$
+              {item.price * item.quantity}
             </div>
           ))}
 
