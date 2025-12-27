@@ -2,28 +2,33 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+const API_BASE = "https://1221.onrender.com";
+
 export default function AddMenuItem({ onAddSuccess }) {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
 
-  const submit = () => {
- if (name.trim() === "" || price === "") {
-  alert("請填寫名稱與價格");
-  return;
-}
+  const submit = async () => {
+    if (name.trim() === "" || price === "") {
+      alert("請填寫名稱與價格");
+      return;
+    }
 
-    axios
-      .post("http://localhost:3001/menu", { name, price: Number(price) })
-      .then((res) => {
-        alert("新增成功");
-        setName("");
-        setPrice("");
-        if (onAddSuccess) onAddSuccess(); // 加入回呼通知 ShopHome 重新載入
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("新增失敗");
+    try {
+      await axios.post(`${API_BASE}/menu`, {
+        name: name.trim(),
+        price: Number(price)
       });
+
+      alert("新增成功");
+      setName("");
+      setPrice("");
+
+      if (onAddSuccess) onAddSuccess();
+    } catch (err) {
+      console.error("新增菜品失敗", err);
+      alert("新增失敗，請確認後端是否正常");
+    }
   };
 
   return (
