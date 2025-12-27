@@ -6,7 +6,7 @@ export default function ShopHome() {
   const [menu, setMenu] = useState([]);
 
   const loadMenu = () => {
-    axios.get("http://localhost:3001/menu")
+    axios.get(`${API_BASE}/menu`)
       .then(res => setMenu(res.data))
       .catch(err => console.error(err));
   };
@@ -18,7 +18,7 @@ export default function ShopHome() {
   const deleteItem = (id) => {
     if (!window.confirm("確定要刪除嗎？")) return;
 
-    axios.delete(`http://localhost:3001/menu/${id}`)
+    axios.delete(`${API_BASE}/menu/${id}`)
       .then(() => loadMenu())
       .catch(err => console.error(err));
   };

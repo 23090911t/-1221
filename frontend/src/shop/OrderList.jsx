@@ -8,7 +8,7 @@ export default function OrderList() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get("http://localhost:3001/orders")
+    axios.get(`${API_BASE}/orders`)
       .then(res => setOrders(res.data || []))
       .catch(err => {
         console.error(err);
